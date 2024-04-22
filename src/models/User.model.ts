@@ -34,12 +34,15 @@ export interface User{
     username:string;
     email:string;
     password:string;
+    bio:string;
     verifyCode:string;
     verifyCodeExpiry:Date;
     isAcceptingMessage:boolean;
     isVerified:boolean,
     image:Image[],
-    message:Message[]
+    message:Message[],
+    followers:{},
+    following:{},
 }
 
 const UserSchema:Schema<User>=new Schema({
@@ -62,13 +65,16 @@ const UserSchema:Schema<User>=new Schema({
         type:String,
         required:true,
     },
+    bio:{
+        type:String,
+    },
     verifyCode:{
         type:String,
-        required:true
+        // required:true
     },
     verifyCodeExpiry:{
         type:Date,
-        required:true,    
+        // required:true,    
     },
     isVerified:{
         type:Boolean,
@@ -78,6 +84,14 @@ const UserSchema:Schema<User>=new Schema({
         type:Boolean,
         default:true
     },
+    followers: [{
+        type: Schema.Types.ObjectId,
+        ref: 'UserModel'
+      }],
+    following: [{
+        type: Schema.Types.ObjectId,
+        ref: 'UserModel'
+      }],
     message:[MessageSchema],
     image:[ImageSchema],
 })

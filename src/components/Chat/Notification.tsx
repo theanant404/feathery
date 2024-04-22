@@ -2,17 +2,17 @@ import Link from "next/link";
 import { Button } from "../ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "../ui/card";
 import { Sheet, SheetContent, SheetTrigger } from "../ui/sheet";
-import { Home, LineChart, Menu, Package, Package2, Settings, ShoppingCart, Users } from "lucide-react";
+import { BellDot, } from "lucide-react";
 import { Badge } from "../ui/badge";
 
-export default function ChatSetting(){
+export default function Notification(){
     return(
 
         <>
         <Sheet>
         <SheetTrigger asChild>
           <Button variant="outline" size="icon" className="shrink-0">
-            <Settings className="h-5 w-5" />
+            <BellDot className="h-5 w-5" />
             <span className="sr-only">Toggle navigation menu</span>
           </Button>
         </SheetTrigger>

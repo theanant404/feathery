@@ -1,3 +1,4 @@
+"use client"
 import { Artical } from "@/components/profile/articel";
 import EditProfile from "@/components/profile/editProfile";
 import Follower from "@/components/profile/follower";
@@ -6,10 +7,16 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { useSession } from "next-auth/react";
+
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 
 
 export default function PublicProfile({ params }: any) {
+  const router=useRouter();
+  const session = useSession();
+  console.log(session.data?.user)
   return (
     <>
       <div className=" h-52 bg-slate-600">

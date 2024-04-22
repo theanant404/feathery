@@ -12,11 +12,13 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "../ui/dropdown-menu";
-import { useSession } from "next-auth/react";
+import { signOut, useSession } from "next-auth/react";
+import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
 
 export default function NavBar() {
   const session = useSession();
-  console.log(session.status);
+  // console.log(session.status);
+  
   return (
     <>
       <header className="sticky top-0 flex h-16 items-center gap-4 border-b bg-background px-4 md:px-6">
@@ -140,7 +142,31 @@ export default function NavBar() {
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <Button variant="secondary" size="icon" className="rounded-full">
-                <CircleUser className="h-5 w-5" />
+                
+                {session.status==='unauthenticated'&&(
+                  <CircleUser className="h-5 w-5" />
+                )}
+                {session.status==='authenticated'&&(
+                  <>
+                  {session.data.user.image?.length==0?(
+                    <Avatar>
+                    <AvatarImage alt={session.data.user.username} />
+                    <AvatarFallback>
+                      {session.data.user.fullname!
+                        .split(" ")
+                        .map((chunk) => chunk[0])
+                        .join("")}
+                    </AvatarFallback>
+                  </Avatar>
+                  ):(
+                    <>
+                    <Avatar>
+                      <AvatarImage alt={session.data.user.image!}></AvatarImage>
+                    </Avatar>
+                    </>
+                  )}
+                  </>
+                )}
                 <span className="sr-only">Toggle user menu</span>
               </Button>
             </DropdownMenuTrigger>
@@ -156,10 +182,10 @@ export default function NavBar() {
               )}
               {session.status === "authenticated" && (
                 <>
-                  <DropdownMenuItem>Settings</DropdownMenuItem>
+                  <DropdownMenuItem><Link href={`/${session.data.user.username}`}>Profile</Link></DropdownMenuItem>
                   <DropdownMenuItem>Support</DropdownMenuItem>
                   <DropdownMenuSeparator />
-                  <DropdownMenuItem>Logout</DropdownMenuItem>
+                  <DropdownMenuItem onClick={()=>signOut()}>Logout</DropdownMenuItem>
                 </>
               )}
             </DropdownMenuContent>

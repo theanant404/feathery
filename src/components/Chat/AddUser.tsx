@@ -1,66 +1,47 @@
 "use client";
 import Link from "next/link";
 import { Button } from "../ui/button";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "../ui/card";
+
 import { Sheet, SheetContent, SheetTrigger } from "../ui/sheet";
 import {
-  Home,
-  LineChart,
-  Menu,
-  Package,
-  Package2,
   Plus,
   Search,
-  ShoppingCart,
-  Users,
 } from "lucide-react";
-import { Badge } from "../ui/badge";
+
 import { ScrollArea } from "../ui/scroll-area";
 import { mails } from "@/data/emali";
 import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
 import { Separator } from "../ui/separator";
 import { Input } from "../ui/input";
 import axios from "axios";
-import { redirect } from "next/navigation";
 import { useSession } from "next-auth/react";
 import { useState } from "react";
-import Cookies from 'js-cookie';
-// import { headers } from "next/headers";
+
+
 interface UserData {
   id: string;
   username: string;
-  name: string;
+  fullname: string;
   email: string;
 }
 
 export default function AddUsers() {
+  const session=useSession()
   const [data, setData] = useState<UserData[]>([]);
-  const token = Cookies.get('token');
-  const apiResponseString = localStorage.getItem('apiResponse');
-  console.log('api response is:-',apiResponseString)
+  
   // console.log(token)
-  const headers = {
-    'Authorization': `Bearer ${apiResponseString}`,
-    'Content-Type': 'application/json' // Adjust content type if necessary
-  };
   const allUser = async () => {
-    axios.get("http://localhost:3000/chat/users",{ headers }
-    
+    axios.get("/api/chat/get-all-users"
     ).then((response) => {
-      console.log("Response:", response);
+      // console.log("Response:", response);
       if (response.statusText === "OK") {
-        console.log("data is :-", response.data);
-        const users = response.data.data.map(
-          (user: { _id: any; username: any; email: any }) => ({
+        // console.log("data is :-", response.data.user);
+        const users = response.data.user.map(
+          (user: { _id: any; username: any; email: any;fullname:any}) => ({
             id: user._id,
             username: user.username,
             email: user.email,
+            fullname:user.fullname,
           })
         );
 
@@ -68,19 +49,23 @@ export default function AddUsers() {
       }
     });
   };
-  const CreateOneOneChat = async () => {
-    console.log("one one chat created");
-    // if(session.status==='authenticated'){
-    //   axios.get('/api/chat/createoneonechat',{
-    //     params: {
-    //       userId:session.data.user._id
-    //     }
-    //   })
-    //   .then((response) => {
-    //     console.log("Response:", response);
 
-    //   })
-    // }
+  const CreateOneOneChat = async (id: string) => {
+    
+    console.log(id)
+    console.log("one one chat created");
+    
+    
+    
+    if(session.status==='authenticated'){
+      console.log('clickd',id)
+      axios.post('/api/chat/create-one-to-one-chat',{userId:id})
+      .then((response) => {
+        // console.log("Response:", response);
+        // console.log(response.)
+
+      })
+    }
   };
   // console.log(data)
   return (
@@ -112,25 +97,26 @@ export default function AddUsers() {
                 />
               </div>
             </form>
+             <ScrollArea className="h-[80%]">
             {data ? (
-              <ScrollArea className="w-72 h-[70%]">
+             
                 <div className="flex flex-col gap-2 p-4 pt-0">
                   {data.map((item) => (
-                    <div onClick={CreateOneOneChat} key={item.id}>
+                    <div className="cursor-pointer" onClick={() => CreateOneOneChat(item.id)}key={item.id}>
                       {/* <Link href={`/inbox/${item.id}`} key={item.id}> */}
                       <div className="flex w-full flex-col gap-1">
                         <div className="flex items-center">
                           <div className="flex items-center gap-2">
                             <Avatar>
-                              <AvatarImage alt={item.name} />
+                              <AvatarImage alt={item.fullname} />
                               <AvatarFallback>
-                                {item.name
+                                {item.fullname
                                   .split(" ")
                                   .map((chunk) => chunk[0])
                                   .join("")}
                               </AvatarFallback>
                             </Avatar>
-                            <div className="font-semibold">{item.name}</div>
+                            <div className="font-semibold">{item.fullname}</div>
                           </div>
                         </div>
                       </div>
@@ -139,8 +125,9 @@ export default function AddUsers() {
                     </div>
                   ))}
                 </div>
-              </ScrollArea>
+              
             ) : null}
+            </ScrollArea>
           </div>
         </SheetContent>
       </Sheet>

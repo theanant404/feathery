@@ -27,7 +27,7 @@ export const authOptions:NextAuthOptions={
                             {username:credentials.email}
                         ]
                     })
-                    console.log(user)
+                    // console.log('user login',user)
                     if(!user){
                         throw new Error('No user found with this email')
                     }
@@ -60,7 +60,8 @@ export const authOptions:NextAuthOptions={
                 token._id=user._id?.toString()
                 token.isVerified=user.isVerified;
                 token.isAcceptingMessages=user.isAccpetingMessages;
-                token.usename=user.username
+                token.username=user.username
+                token.fullname=user.fullname
             }
             return token
         },
@@ -70,6 +71,7 @@ export const authOptions:NextAuthOptions={
                 session.user.isVerified=token.isVerified
                 session.user.isAccpetingMessages=token.isAccpetingMessages
                 session.user.username=token.username
+                session.user.fullname=token.fullname
             }
             return session
         }

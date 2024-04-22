@@ -25,8 +25,9 @@ export default function SignIn() {
   const password = user.password;
   const onLogin = async () => {
     const response = await signIn('credentials', { email: email, password: password })
+    // console.log('login success')
     router.push("/");
-    console.log(response)
+    // console.log(response)
   }
   return (
     <Card className="mx-auto max-w-sm">

@@ -37,17 +37,7 @@ const FormSchema = z.object({
     message: "Your one-time password must be 6 characters.",
   }),
 });
-function onSubmit(data: z.infer<typeof FormSchema>) {
-  console.log(data.pin);
-  toast({
-    title: "You submitted the following values:",
-    description: (
-      <pre className="mt-2 w-[340px] rounded-md bg-slate-950 p-4">
-        <code className="text-white">{JSON.stringify(data, null, 2)}</code>
-      </pre>
-    ),
-  });
-}
+
 export default function SignUp() {
   const router = useRouter();
   const [user, setUser] = React.useState({
@@ -64,15 +54,15 @@ export default function SignUp() {
         .post("/api/sign-up", user)
         .then(async (response) => {
           console.log("Response:", response);
-          // if (response.statusText === "OK") {
-          //   router.push("/login");
-          // }
+          if (response.statusText === "OK") {
+            router.push("/sign-in");
+          }
         })
         
       // router.push("/login");
     } catch (error: any) {
-      console.log("Registered failed", error);
-
+      console.log("Registered failed", error.response.data.message);
+      alert(error.response.data.message)
       // toast.error(error.message);
     }
   };
@@ -83,7 +73,17 @@ const form = useForm<z.infer<typeof FormSchema>>({
     pin: "",
   },
 });
-
+function onSubmit(data: z.infer<typeof FormSchema>) {
+  console.log(data.pin);
+  toast({
+    title: "You submitted the following values:",
+    description: (
+      <pre className="mt-2 w-[340px] rounded-md bg-slate-950 p-4">
+        <code className="text-white">{JSON.stringify(data, null, 2)}</code>
+      </pre>
+    ),
+  });
+}
 
 const response = false;
 return (
