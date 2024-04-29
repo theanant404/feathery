@@ -98,22 +98,30 @@ export async function POST(req: Request) {
                 message: "User not avlale for chat"
             })
         }
+        console.log("login session:-",session.user._id)
+        console.log("resiver id is:-",receiverId)
         const chat = await ChatModel.aggregate([
             {
+                // $match: {
+                //     isGroupChat: false, // avoid group chats. This controller is responsible for one on one chats
+                //     // Also, filter chats with participants having receiver and logged in user only
+                //     $and: [
+                //         {
+                //             participants: { $elemMatch: { $eq: session.user._id! } },
+                //         },
+                //         {
+                //             participants: {
+                //                 $elemMatch: { $eq: new mongoose.Types.ObjectId(receiverId) },
+                //             },
+                //         },
+                //     ],
+                // },
                 $match: {
-                    isGroupChat: false, // avoid group chats. This controller is responsible for one on one chats
-                    // Also, filter chats with participants having receiver and logged in user only
-                    $and: [
-                        {
-                            participants: { $elemMatch: { $eq: session.user._id!.toString() } },
-                        },
-                        {
-                            participants: {
-                                $elemMatch: { $eq: new mongoose.Types.ObjectId(receiverId) },
-                            },
-                        },
-                    ],
-                },
+                    admin: new mongoose.Types.ObjectId(receiverId), // Match the chat room by its ID
+                    participants: {
+                      $in: [new mongoose.Types.ObjectId(session.user._id)] // Check if the user ID is present in the participants array
+                    }
+                  }
             },
             ...chatCommonAggregation(),
         ]);
@@ -131,15 +139,15 @@ export async function POST(req: Request) {
         }
         // if not we need to create a new one on one chat
 
-     
-            const newChatInstance = await ChatModel.create({
-                name: "One on one chat",
-                participants: [session.user._id!.toString(), new mongoose.Types.ObjectId(receiverId)], // add receiver and logged in user as participants
-                admin: session.user._id!.toString(),
-            });
-            // console.log("New chat INstance is:-", newChatInstance)
-    
-       
+
+        const newChatInstance = await ChatModel.create({
+            name: "One on one chat",
+            participants: [session.user._id!, new mongoose.Types.ObjectId(receiverId)], // add receiver and logged in user as participants
+            admin: session.user._id!,
+        });
+        // console.log("New chat INstance is:-", newChatInstance)
+
+
 
         // structure the chat as per the common aggregation to keep the consistency
         const createdChat = await ChatModel.aggregate([
@@ -153,6 +161,7 @@ export async function POST(req: Request) {
 
         const payload = createdChat[0]; // store the aggregation result
 
+        console.log("payload is:-",payload)
         if (!payload) {
             return Response.json({
                 message: "internal server",
@@ -162,13 +171,13 @@ export async function POST(req: Request) {
 
         // logic to emit socket event about the new chat added to the participants
         payload?.participants?.forEach((participant: any) => {
-            if (participant._id.toString() === session.user._id!.toString()) return; // don't emit the event for the logged in use as he is the one who is initiating the chat
+            if (participant._id.toString() === session.user._id!) return; // don't emit the event for the logged in use as he is the one who is initiating the chat
 
             // emit event to other participants with new chat as a payload
             // emitSocketEvent(
-            //   req,
+            //   session,
             //   participant._id?.toString(),
-            //   constants.ChatEventEnum.NEW_CHAT_EVENT,
+            //   ChatEventEnum.NEW_CHAT_EVENT,
             //   payload
             // );
         });

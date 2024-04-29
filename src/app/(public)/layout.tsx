@@ -16,7 +16,7 @@ export default function Layout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
+    <html lang="en" className="dark">
       <AuthProvider>
         
       <body className={inter.className}>

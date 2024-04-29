@@ -3,8 +3,10 @@ import UserModel from "@/models/User.model";
 import { Message } from "@/models/User.model";
 
 export async function POST(req:Request){
+    console.log('api hit')
     await dbConnect()
     const {username,content}=await req.json()
+    console.log(content)
 
     try {
         const user=await UserModel.findOne({username})

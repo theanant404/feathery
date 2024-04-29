@@ -97,7 +97,7 @@ export default function AddUsers() {
                 />
               </div>
             </form>
-             <ScrollArea className="h-[80%]">
+             <ScrollArea className="h-screen">
             {data ? (
              
                 <div className="flex flex-col gap-2 p-4 pt-0">

@@ -6,7 +6,6 @@ import { Message } from "@/models/User.model";
 import { getServerSession } from "next-auth";
 import { authOptions } from "../../auth/[...nextauth]/options";
 import mongoose from "mongoose";
-
 const chatMessageCommonAggregation = () => {
   return [
     {
@@ -36,11 +35,11 @@ const chatMessageCommonAggregation = () => {
 export async function POST(req: Request) {
   const session = await getServerSession(authOptions);
   await dbConnect();
-  const { chatroomId, message } = await req.json();
+  const { chatroomId, msgData} = await req.json();
   const ChatRoomId: string = chatroomId;
-  // console.log(chatroomId,message.content)
+  // console.log(chatroomId,msgData)
   try {
-    if (!message) {
+    if (!msgData) {
       return Response.json({
         success: false,
         message: "Message content is empiyt",
@@ -58,7 +57,7 @@ export async function POST(req: Request) {
     }
     const Message = await ChatMessageModel.create({
       sender: new mongoose.Types.ObjectId(session?.user._id!.toString()),
-      content: message.content || "",
+      content: msgData.content || "",
       chat: new mongoose.Types.ObjectId(ChatRoomId),
     });
     // console.log(Message)
@@ -81,7 +80,7 @@ export async function POST(req: Request) {
       ...chatMessageCommonAggregation(),
     ]);
     const receivedMessage = messages[0];
-    console.log(receivedMessage)
+    // console.log(receivedMessage)
     if (!receivedMessage) {
       return Response.json(
         {
@@ -91,6 +90,15 @@ export async function POST(req: Request) {
         { status: 500 }
       );
     }
+    // chat?.participants.forEach((participantObjectId:any)=>{
+    //   if(participantObjectId.toString()===session?.user._id)return;
+    //   emitSocketEvent(
+    //     session,
+    //     participantObjectId.toString(),
+    //     ChatEventEnum.MESSAGE_RECEIVED_EVENT,
+    //     receivedMessage
+    //   )
+    // })
     return Response.json(
       {
         success: true,

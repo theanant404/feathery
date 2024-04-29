@@ -48,30 +48,6 @@ export default function SidBar() {
     router.push("/login");
   }
 
-  const [data, setData] = useState<UserData[]>([]);
-  useEffect(() => {
-    axios.get("/api/chat/get-chat-room-user").then((response) => {
-    //   console.log("Response:", response);
-      if (response.statusText === "OK") {
-        // console.log("data is :-", response.data.user);
-        const users = response.data.user.map(
-          (user: {
-            _id: any;
-            participants: any;
-            participantsId: any;
-            email: any;
-            fullname: any;
-          }) => ({
-            id: user._id,
-            fullname: user.participants[0].fullname,
-            participantsId: user.participants[0]._id,
-          })
-        );
-
-        setData(users);
-      }
-    });
-  }, []);
   return (
     <>
       '

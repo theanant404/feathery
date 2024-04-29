@@ -29,7 +29,8 @@ export const authOptions:NextAuthOptions={
                     })
                     // console.log('user login',user)
                     if(!user){
-                        throw new Error('No user found with this email')
+                        // throw new Error('No user found with this email')
+                        return user;
                     }
                     if(!user.isVerified){
                         throw new Error("Please vefify your account berore login")

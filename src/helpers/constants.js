@@ -1,4 +1,7 @@
-const ChatEventEnum = Object.freeze({
+
+
+
+export const ChatEventEnum = Object.freeze({
   // ? once user is ready to go
   CONNECTED_EVENT: "connected",
   // ? when user gets disconnected
@@ -23,7 +26,4 @@ const ChatEventEnum = Object.freeze({
   MESSAGE_DELETE_EVENT: "messageDeleted",
 });
 
-const AvailableChatEvents = Object.values(ChatEventEnum);
-
-
-export default {AvailableChatEvents,ChatEventEnum}
+export const AvailableChatEvents = Object.values(ChatEventEnum);

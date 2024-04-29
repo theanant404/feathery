@@ -7,16 +7,13 @@ export async function POST(req: Request) {
   await dbConnect();
 
   try {
-    const { fullname, email, password } = await req.json();
-    if(!fullname||!email||!password){
+    const { fullname, email, password,username } = await req.json();
+    if(!fullname||!email||!password||!username){
       return Response.json({
         success:false,
         message:"Provide all Cradiential "
       },{status:400})
     }
-    const username = `${email.split("@")[0]}${Math.floor(
-      Math.random() * 10000
-    )}`;
     const existingUserVerifiedByUsername = await UserModel.findOne({
       username,
       isVerified: true,
